@@ -58,7 +58,7 @@ public class ExameDAO implements GenericDAO<Exame, Long> {
                         rs.getLong("id"),
                         rs.getString("descricao"),
                         rs.getString("data_exame"),
-                        rs.getLong("paciente_id")
+                        rs.getLong("pacientes_id") 
                     );
                 }
             }
@@ -117,7 +117,7 @@ public class ExameDAO implements GenericDAO<Exame, Long> {
                     rs.getLong("id"),
                     rs.getString("descricao"),
                     rs.getString("data_exame"),
-                    rs.getLong("paciente_id")
+                    rs.getLong("pacientes_id") 
                 );
                 list.add(exame);
             }

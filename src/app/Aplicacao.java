@@ -2,23 +2,20 @@ package app;
 
 import javax.swing.SwingUtilities;
 
-import dao.GenericDAO;
+import dao.ExameDAO;
 import dao.PacienteDAO;
 import db.MySQLDatabaseConnection;
 import gui.TelaPrincipal;
-import model.Paciente;
+import service.ExameService;
 import service.PacienteService;
-import util.LoadParameter;
+
 
 public class Aplicacao {
-
-	
-	public static void main(String[] args) {
-		
-		PacienteService pacServ =
-				new PacienteService(new PacienteDAO(new MySQLDatabaseConnection()));
-		
-		SwingUtilities.invokeLater(()-> new TelaPrincipal(pacServ).setVisible(true));
-		
-	}
+    public static void main(String[] args) {
+        MySQLDatabaseConnection conn = new MySQLDatabaseConnection();
+        PacienteService pacServ = new PacienteService(new PacienteDAO(conn));
+        ExameService exameServ = new ExameService(new ExameDAO(conn));
+        
+        SwingUtilities.invokeLater(() -> new TelaPrincipal(pacServ, exameServ).setVisible(true));
+    }
 }

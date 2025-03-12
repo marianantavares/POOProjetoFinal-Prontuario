@@ -1,10 +1,11 @@
 package gui;
 
-import java.awt.BorderLayout;
+import java.awt.BorderLayout; 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -16,9 +17,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+
+import model.Exame;
 import model.Paciente;
+import service.ExameService;
 import service.PacienteService;
 
 public class TelaPrincipal extends JFrame {
@@ -28,66 +31,89 @@ public class TelaPrincipal extends JFrame {
     private JMenuBar barraMenu;
     private JMenu menuPaciente;
     private JMenuItem menuItemAdicionarPaciente;
-    private JScrollPane scrollPane;
+    private JMenu menuExames;
+    private JMenuItem menuItemAdicionarExame;
+    
     private JTabbedPane tabbed;
     private JTable tablePacientes;
-    private PacienteService pacService;
-    private JMenu menuExames;
-    private JMenuItem menuItemDescricaoExames;
+    private JTable tableExames;
     
-    public TelaPrincipal(PacienteService pacService) {
+    private PacienteService pacService;
+    private ExameService exameService;
+    
+    public TelaPrincipal(PacienteService pacService, ExameService exameService) {
         this.pacService = pacService;
-        setTitle("Gerencia de Prontuarios");
-        setSize(600,400);
+        this.exameService = exameService;
+        
+        setTitle("Gerenciamento de Pacientes e Exames");
+        setSize(800,600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         
         // Configuração da barra de menu
         barraMenu = new JMenuBar();
-        menuPaciente = new JMenu("Paciente");
-        menuItemAdicionarPaciente = new JMenuItem("Adicionar");
-        menuItemAdicionarPaciente.addActionListener(e -> new TelaCadastrarPaciente(pacService, this));
-        // Ação para atualizar via menu pode ser implementada conforme necessário
         
+        menuPaciente = new JMenu("Paciente");
+        menuItemAdicionarPaciente = new JMenuItem("Adicionar Paciente");
+        menuItemAdicionarPaciente.addActionListener(e -> new TelaCadastrarPaciente(pacService, this));
         menuPaciente.add(menuItemAdicionarPaciente);
         barraMenu.add(menuPaciente);
         
         menuExames = new JMenu("Exames");
-        menuItemDescricaoExames = new JMenuItem("Descrição de Exames");
-        menuExames.add(menuItemDescricaoExames);
+        menuItemAdicionarExame = new JMenuItem("Adicionar Exame");
+        menuItemAdicionarExame.addActionListener(e -> new TelaCadastrarExame(pacService, exameService, this));
+        menuExames.add(menuItemAdicionarExame);
         barraMenu.add(menuExames);
         
         add(barraMenu, BorderLayout.NORTH);
         
-        // Configuração da tabela com scroll e painel de abas
-        tablePacientes = new JTable();
-        scrollPane = new JScrollPane(tablePacientes);
+        // Configuração do painel de abas
         tabbed = new JTabbedPane();
-        tabbed.addTab("Pacientes", scrollPane);
+        
+        // Aba Pacientes
+        tablePacientes = new JTable();
+        JScrollPane scrollPacientes = new JScrollPane(tablePacientes);
+        tabbed.addTab("Pacientes", scrollPacientes);
+        
+        // Aba Exames
+        tableExames = new JTable();
+        JScrollPane scrollExames = new JScrollPane(tableExames);
+        tabbed.addTab("Exames", scrollExames);
+        
         add(tabbed, BorderLayout.CENTER);
         
         loadTablePaciente();
+        loadTableExame();
     }
     
-    protected void loadTablePaciente() {
-        List<Paciente> itens = pacService.getPacientes();
-        TabelaPacienteModel model = new TabelaPacienteModel(itens);
+    public void loadTablePaciente() {
+        List<Paciente> pacientes = pacService.getPacientes();
+        TabelaPacienteModel model = new TabelaPacienteModel(pacientes);
         tablePacientes.setModel(model);
         
-        // Configura renderers e editores para as colunas "Editar" e "Excluir"
         tablePacientes.getColumn("Editar").setCellRenderer(new ButtonRenderer());
-        tablePacientes.getColumn("Editar").setCellEditor(new ButtonEditor(new JCheckBox()));
+        tablePacientes.getColumn("Editar").setCellEditor(new ButtonEditor(new JCheckBox(), true));
         tablePacientes.getColumn("Excluir").setCellRenderer(new ButtonRenderer());
-        tablePacientes.getColumn("Excluir").setCellEditor(new ButtonEditor(new JCheckBox()));
+        tablePacientes.getColumn("Excluir").setCellEditor(new ButtonEditor(new JCheckBox(), true));
     }
     
-    // Renderer para exibir botões nas células
+    public void loadTableExame() {
+        List<Exame> exames = exameService.getExames();
+        TabelaExameModel model = new TabelaExameModel(exames);
+        tableExames.setModel(model);
+        
+        tableExames.getColumn("Editar").setCellRenderer(new ButtonRenderer());
+        tableExames.getColumn("Editar").setCellEditor(new ButtonEditor(new JCheckBox(), false));
+        tableExames.getColumn("Excluir").setCellRenderer(new ButtonRenderer());
+        tableExames.getColumn("Excluir").setCellEditor(new ButtonEditor(new JCheckBox(), false));
+    }
+    
+    // Renderer para exibir botões
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
         }
-        
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
@@ -96,26 +122,33 @@ public class TelaPrincipal extends JFrame {
         }
     }
     
-    // Editor para capturar cliques nos botões da tabela
+    // Editor para tratar cliques nos botões (para pacientes e exames)
     class ButtonEditor extends DefaultCellEditor {
         protected JButton button;
         private String label;
         private boolean isPushed;
         private int selectedRow;
         private int selectedColumn;
+        private boolean isPaciente; // true para paciente, false para exame
         
-        public ButtonEditor(JCheckBox checkBox) {
+        public ButtonEditor(JCheckBox checkBox, boolean isPaciente) {
             super(checkBox);
+            this.isPaciente = isPaciente;
             button = new JButton();
             button.setOpaque(true);
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
-                    // Chama o método conforme a coluna: 3 para "Editar", 4 para "Excluir"
+            button.addActionListener(e -> {
+                fireEditingStopped();
+                if (isPaciente) {
                     if (selectedColumn == 3) {
                         editarPaciente(selectedRow);
                     } else if (selectedColumn == 4) {
                         excluirPaciente(selectedRow);
+                    }
+                } else {
+                    if (selectedColumn == 4) {
+                        editarExame(selectedRow);
+                    } else if (selectedColumn == 5) {
+                        excluirExame(selectedRow);
                     }
                 }
             });
@@ -145,21 +178,17 @@ public class TelaPrincipal extends JFrame {
         }
     }
     
-    // Método para tratar a edição do paciente
+    // Métodos para editar e excluir pacientes
     private void editarPaciente(int row) {
-        // Recupera o ID do paciente (assumindo que a coluna 0 contém o ID)
         Long id = (Long) tablePacientes.getModel().getValueAt(row, 0);
         Paciente p = pacService.localizarPacientePorId(id);
         if (p != null) {
-            // Abre a tela de edição passando o paciente encontrado
             new TelaEditarPaciente(pacService, p, this);
         } else {
             JOptionPane.showMessageDialog(this, "Paciente não encontrado!");
         }
     }
-
     
-    // Método para tratar a exclusão do paciente
     private void excluirPaciente(int row) {
         Long id = (Long) tablePacientes.getModel().getValueAt(row, 0);
         int confirm = JOptionPane.showConfirmDialog(this, "Confirma exclusão do paciente com id: " + id + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
@@ -171,6 +200,32 @@ public class TelaPrincipal extends JFrame {
                 loadTablePaciente();
             } else {
                 JOptionPane.showMessageDialog(this, "Paciente não encontrado!");
+            }
+        }
+    }
+    
+    // Métodos para editar e excluir exames
+    private void editarExame(int row) {
+        Long id = (Long) tableExames.getModel().getValueAt(row, 0);
+        Exame exame = exameService.localizarExamePorId(id);
+        if (exame != null) {
+            new TelaEditarExame(pacService, exameService, exame, this);
+        } else {
+            JOptionPane.showMessageDialog(this, "Exame não encontrado!");
+        }
+    }
+    
+    private void excluirExame(int row) {
+        Long id = (Long) tableExames.getModel().getValueAt(row, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "Confirma exclusão do exame com id: " + id + "?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            Exame exame = exameService.localizarExamePorId(id);
+            if (exame != null) {
+                exameService.deletarExame(exame);
+                JOptionPane.showMessageDialog(this, "Exame excluído com sucesso!");
+                loadTableExame();
+            } else {
+                JOptionPane.showMessageDialog(this, "Exame não encontrado!");
             }
         }
     }
