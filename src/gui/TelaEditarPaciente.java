@@ -38,12 +38,12 @@ public class TelaEditarPaciente extends JDialog {
         setLayout(new BorderLayout());
         
         // Painel do formulário
-        JPanel panel = new JPanel(new GridLayout(2,2));
+        JPanel panel = new JPanel();
         panel.add(new JLabel("CPF:"));
-        txfCpf = new JTextField(paciente.getCpf(), 26);
+        txfCpf = new JTextField(paciente.getCpf(), 30);
         panel.add(txfCpf);
         panel.add(new JLabel("Nome:"));
-        txfNome = new JTextField(paciente.getNome(), 26);
+        txfNome = new JTextField(paciente.getNome(), 28);
         panel.add(txfNome);
         add(panel, BorderLayout.CENTER);
         

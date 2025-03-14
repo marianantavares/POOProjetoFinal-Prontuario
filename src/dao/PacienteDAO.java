@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import db.DatabaseConnection;
+import exceptions.PacienteException;
 import model.Paciente;
 
 /* 
@@ -23,7 +24,6 @@ public class PacienteDAO implements GenericDAO<Paciente, Long> {
     }
     
     // Método para adicionar um paciente no banco de dados
-    @Override
     public void add(Paciente obj) {
         String query = "INSERT INTO PACIENTES VALUES (?,?,?)";
         try (PreparedStatement pstm = db.getConnection().prepareStatement(query)) {
@@ -32,12 +32,11 @@ public class PacienteDAO implements GenericDAO<Paciente, Long> {
             pstm.setString(3, obj.getNome());
             pstm.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new PacienteException("Erro ao adicionar paciente");
         }
     }
     
     // Método para buscar um paciente por ID
-    @Override
     public Paciente findByID(Long id) {
         String query = "SELECT * FROM PACIENTES WHERE id = ?";
         try (PreparedStatement pstm = db.getConnection().prepareStatement(query)) {
@@ -54,14 +53,13 @@ public class PacienteDAO implements GenericDAO<Paciente, Long> {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new PacienteException("Erro ao buscar paciente por ID");
         }
         // Se não encontrar o paciente, retorna null
         return null;
     }
     
     // Método para deletar um paciente do banco de dados
-    @Override
     public void delete(Paciente obj) {
         String query = "DELETE FROM PACIENTES WHERE id = ?";
         try (PreparedStatement pstm = db.getConnection().prepareStatement(query)) {
@@ -69,12 +67,11 @@ public class PacienteDAO implements GenericDAO<Paciente, Long> {
             pstm.setLong(1, obj.getId());
             pstm.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new PacienteException("Erro ao deletar paciente");
         }
     }
     
     // Método para atualizar os dados de um paciente já cadastrado
-    @Override
     public void update(Paciente obj) {
         String query = "UPDATE PACIENTES SET cpf = ?, nome = ? WHERE id = ?";
         try (PreparedStatement pstm = db.getConnection().prepareStatement(query)) {
@@ -84,12 +81,11 @@ public class PacienteDAO implements GenericDAO<Paciente, Long> {
             pstm.setLong(3, obj.getId());
             pstm.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+        	throw new PacienteException("Erro ao editar o paciente");
         }
     }
     
     // Método para retornar todos os pacientes cadastrados
-    @Override
     public List<Paciente> getAll() {
         List<Paciente> temp = new ArrayList<>();
         String query = "SELECT * FROM PACIENTES;";
@@ -102,8 +98,8 @@ public class PacienteDAO implements GenericDAO<Paciente, Long> {
             }
             return temp;
         } catch (SQLException e) {
-            e.printStackTrace();
+        	throw new PacienteException("Erro ao buscar todos os pacientes");
         }
-        return null;
     }
+    
 }

@@ -2,6 +2,7 @@ package service;
 
 import java.util.List;
 import dao.GenericDAO;
+import exceptions.ExameException;
 import model.Exame;
 
 public class ExameService {
@@ -12,22 +13,42 @@ public class ExameService {
     }
     
     public void adicionarExame(Exame exame) {
-        daoExame.add(exame);
+        try {
+            daoExame.add(exame);
+        } catch (Exception e) {
+            throw new ExameException("Erro ao adicionar exame");
+        }
     }
     
     public Exame localizarExamePorId(Long id) {
-        return daoExame.findByID(id);
+        try {
+            return daoExame.findByID(id);
+        } catch (Exception e) {
+            throw new ExameException("Erro ao localizar exame");
+        }
     }
     
     public void deletarExame(Exame exame) {
-        daoExame.delete(exame);
+        try {
+            daoExame.delete(exame);
+        } catch (Exception e) {
+            throw new ExameException("Erro ao deletar exame");
+        }
     }
     
     public List<Exame> getExames() {
-        return daoExame.getAll();
+        try {
+            return daoExame.getAll();
+        } catch (Exception e) {
+            throw new ExameException("Erro ao listar exames");
+        }
     }
     
     public void atualizarExame(Exame exame) {
-        daoExame.update(exame);
+        try {
+            daoExame.update(exame);
+        } catch (Exception e) {
+            throw new ExameException("Erro ao atualizar exame");
+        }
     }
 }

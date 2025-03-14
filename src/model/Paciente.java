@@ -73,11 +73,7 @@ public class Paciente {
 
 	@Override
 	public String toString() {
-		return "Paciente [id=" + id + ", cpf=" + cpf + ", nome=" + nome + ", exames=" + exames + "]";
+		return "Paciente - id: " + id + ", CPF: " + cpf + ", Nome: " + nome;
 	}
-	
-	
-	
-	
-	
+
 }

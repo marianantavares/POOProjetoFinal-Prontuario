@@ -9,6 +9,8 @@ public class Exame {
     private String dataExame;
     // Novo atributo para associar o exame a um paciente pelo ID
     private Long pacienteId;
+    private String pacienteNome;
+
 
     /**
      * Construtor com todos os parâmetros.
@@ -104,6 +106,15 @@ public class Exame {
     public void setPacienteId(Long pacienteId) {
         this.pacienteId = pacienteId;
     }
+    
+    public String getPacienteNome() {
+        return pacienteNome;
+    }
+
+    public void setPacienteNome(String pacienteNome) {
+        this.pacienteNome = pacienteNome;
+    }
+
 
     @Override
     public int hashCode() {

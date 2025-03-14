@@ -1,5 +1,6 @@
-/app/
-/db/
+/model/
+/exceptions/
+/util/
 /service/
-/gui/
 /dao/
+/gui/

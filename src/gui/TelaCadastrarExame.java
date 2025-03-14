@@ -42,17 +42,17 @@ public class TelaCadastrarExame extends JDialog {
         this.main = main;
         
         setTitle("Cadastro de Exame");
-        setSize(400,250);
+        setSize(600,200);
         setLayout(new BorderLayout());
         setResizable(false);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
-        painelForm = new JPanel(new GridLayout(4,2,5,5));
+        painelForm = new JPanel();
         
         lblDescricao = new JLabel("Descrição:");
-        txfDescricao = new JTextField(30);
+        txfDescricao = new JTextField(45);
         lblDataExame = new JLabel("Data do Exame:");
-        txfDataExame = new JTextField(30);
+        txfDataExame = new JTextField(43);
         lblPaciente = new JLabel("Paciente:");
         
         // Preenche o combo com os pacientes cadastrados

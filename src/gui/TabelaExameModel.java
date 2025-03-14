@@ -14,7 +14,7 @@ public class TabelaExameModel extends AbstractTableModel {
 	private static final long serialVersionUID = 1L;
 	
 	private List<Exame> exames;
-    private String[] colunas = {"idExame", "Descrição", "Data do Exame", "Paciente ID", "Editar", "Excluir"};
+    private String[] colunas = {"idExame", "Nome do Paciente", "Descrição", "Data do Exame", "Editar", "Excluir"};
     
     public TabelaExameModel(List<Exame> exames) {
         this.exames = exames;
@@ -40,9 +40,9 @@ public class TabelaExameModel extends AbstractTableModel {
         Exame exame = exames.get(rowIndex);
         switch(columnIndex) {
             case 0: return exame.getId();
-            case 1: return exame.getDescricao();
-            case 2: return exame.getDataExame();
-            case 3: return exame.getPacienteId();
+            case 1: return exame.getPacienteNome();// Exibe o nome do paciente em vez do ID
+            case 2: return exame.getDescricao();
+            case 3: return exame.getDataExame();
             case 4: return "Editar";
             case 5: return "Excluir";
             default: return null;

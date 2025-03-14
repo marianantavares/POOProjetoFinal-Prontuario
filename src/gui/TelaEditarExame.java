@@ -34,16 +34,16 @@ public class TelaEditarExame extends JDialog {
         this.main = main;
         
         setTitle("Editar Exame");
-        setSize(400,250);
+        setSize(600,200);
         setLayout(new BorderLayout());
         setResizable(false);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         
-        painelForm = new JPanel(new GridLayout(4,2,5,5));
+        painelForm = new JPanel();
         lblDescricao = new JLabel("Descrição:");
-        txfDescricao = new JTextField(exame.getDescricao(), 30);
+        txfDescricao = new JTextField(exame.getDescricao(), 45);
         lblDataExame = new JLabel("Data do Exame:");
-        txfDataExame = new JTextField(exame.getDataExame(), 30);
+        txfDataExame = new JTextField(exame.getDataExame(), 43);
         lblPaciente = new JLabel("Paciente:");
         
         // Preenche o combo com os pacientes e seleciona o associado ao exame
